@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit AdAccount{% endblock %}
+
+{% block body %}
+    <h1>Edit AdAccount</h1>
+
+    {{ include('ad_account/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('ad_account_index') }}">back to list</a>
+
+    {{ include('ad_account/_delete_form.html.twig') }}
+{% endblock %}
