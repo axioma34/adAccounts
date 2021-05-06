@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -53,11 +54,24 @@ class User implements UserInterface
     /**
      * @var ArrayCollection
      *
+     * @Ignore()
+     *
      * @ORM\OneToMany(targetEntity="App\Entity\UserAccount", mappedBy="user",
-     *      cascade={"persist", "remove"}, orphanRemoval=true, fetch="EXTRA_LAZY")
+     *      cascade={"persist", "remove"}, orphanRemoval=true)
      *
      */
     protected $accounts;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @Ignore()
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\UsersGroups", mappedBy="user",
+     *      cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     */
+    protected $groups;
 
      /**
       * @ORM\Column(type="string", unique=true, nullable=true)
@@ -66,6 +80,7 @@ class User implements UserInterface
 
     #[Pure] public function __construct() {
         $this->accounts = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getId(): ?int

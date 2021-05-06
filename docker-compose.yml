@@ -1,0 +1,40 @@
+services:
+  #PHP Service
+  php-fpm:
+    container_name: php-fpm
+    build:
+      context: ./docker/php-fpm
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/test
+    volumes:
+      - ./:/var/www
+
+  #Nginx Service
+  nginx:
+    build:
+      context: ./docker/nginx
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites/:/etc/nginx/sites-available
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d
+    depends_on:
+      - php-fpm
+    ports:
+      - "8085:80"
+      - "443:443"
+
+  #Postgre Service
+  db:
+    image: postgres:13-alpine
+    restart: always
+    volumes:
+      - /data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /tmp
+    ports:
+      - 5432:5432

@@ -114,16 +114,26 @@ class UserController extends AbstractController
         return $this->json($user);
     }
 
-    #[Route('/{id}', name: 'user_delete', methods: ['POST'])]
-    public function delete(Request $request, User $user): Response
+    /**
+     * Удаление пользователя.
+     * @param User $user
+     * @return Response
+     * @Route("/{id}", name="user_delete", methods={"DELETE"})
+     *
+     * @OA\Parameter(name="id", in="path", description="ID пользователя", required=true)
+     *
+     * @OA\Response(
+     *     response="200",
+     *     description="Пользователь удален",
+     * )
+     * @OA\Tag(name="Пользователи")
+     */
+    public function delete(User $user): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($user);
-            $entityManager->flush();
-        }
+        $this->getDoctrine()->getManager()->remove($user);
+        $this->getDoctrine()->getManager()->flush();
 
-        return $this->redirectToRoute('user_index');
+        return new Response('');
     }
 
     /**
