@@ -29,16 +29,12 @@ class UserAuthController extends AbstractController
      * @param UserPasswordEncoderInterface $encoder
      * @param UserAccountRepository $userAccRepo
      * @param UsersGroupsRepository $ugRepo
-     * @param GuardAuthenticatorHandler $guardHandler
-     * @param TokenAuthenticator $authenticator
      * @return Response
      */
     public function login(Request $request, UserRepository $userRepo,
                           UserPasswordEncoderInterface $encoder,
                           UserAccountRepository $userAccRepo,
-                          UsersGroupsRepository $ugRepo,
-                          GuardAuthenticatorHandler $guardHandler,
-                          TokenAuthenticator $authenticator): Response
+                          UsersGroupsRepository $ugRepo): Response
     {
         $data = $request->toArray();
         $login = array_key_exists('login', $data) ? $data['login'] : null;

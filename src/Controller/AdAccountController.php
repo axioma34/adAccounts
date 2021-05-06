@@ -36,7 +36,7 @@ class AdAccountController extends AbstractController
      */
     public function list(AdAccountRepository $adAccountRepository, UserAccountRepository $repository): Response
     {
-        if (array_search('ROLE_ADMIN',$this->getUser()->getRoles())) {
+        if (array_search('ROLE_ADMIN',$this->getUser()->getRoles()) !== false) {
             return $this->json($adAccountRepository->findAll());
         }
         $userAccounts = $repository->findBy(['user' => $this->getUser()]);
@@ -87,6 +87,7 @@ class AdAccountController extends AbstractController
     /**
      * Изменение кабинета.
      * @param Request $request
+     * @param AdAccount $adAccount
      * @return Response
      * @Route("/{id}/edit", name="ad_account_edit", methods={"POST"})
      *
