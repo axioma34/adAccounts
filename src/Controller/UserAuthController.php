@@ -34,10 +34,8 @@ class UserAuthController extends AbstractController
      * @param UsersGroupsRepository $ugRepo
      * @return Response
      *
-     * @OA\Parameter(
-     *     name="payload",
-     *     in="path",
-     *     description="Данные для логина",
+     * @OA\RequestBody(
+     *     description="Pet object that needs to be added to the store",
      *     required=true,
      *     @Model(type=App\Form\LoginType::class)
      * )
@@ -54,6 +52,7 @@ class UserAuthController extends AbstractController
                           UserAccountRepository $userAccRepo,
                           UsersGroupsRepository $ugRepo): Response
     {
+        dump($request);
         $data = $request->toArray();
         $login = array_key_exists('login', $data) ? $data['login'] : null;
         $password = array_key_exists('password', $data) ? $data['password'] : null;
@@ -67,14 +66,16 @@ class UserAuthController extends AbstractController
         }
 
         $activeUserAccounts = [];
-        $userAccounts = $userAccRepo->findOneBy(['user' => $user]) ?? [];
+        $userAccounts = $userAccRepo->findBy(['user' => $user]) ?? [];
 
         /** @var UserAccount $account */
         foreach ($userAccounts as $account) {
             $account = $account->getAccount();
             $userGroup = $ugRepo->findOneBy(['user' => $user, 'account' => $account]);
+            dump($userGroup);
             if (!$userGroup) continue;
             $group = $userGroup->getGroup();
+            dump($group);
             if (!$account->getStatus() && $group->getCode() !== UserGroup::EDIT) continue;
             $activeUserAccounts[] = $account;
         }
@@ -93,7 +94,7 @@ class UserAuthController extends AbstractController
     }
 
     /**
-     * @Route("/logout", name="app_logout")
+     * @Route("/logout", name="app_logout", methods={"POST"})
      */
     public function logout()
     {
