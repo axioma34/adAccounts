@@ -52,7 +52,6 @@ class UserAuthController extends AbstractController
                           UserAccountRepository $userAccRepo,
                           UsersGroupsRepository $ugRepo): Response
     {
-        dump($request);
         $data = $request->toArray();
         $login = array_key_exists('login', $data) ? $data['login'] : null;
         $password = array_key_exists('password', $data) ? $data['password'] : null;
@@ -72,10 +71,8 @@ class UserAuthController extends AbstractController
         foreach ($userAccounts as $account) {
             $account = $account->getAccount();
             $userGroup = $ugRepo->findOneBy(['user' => $user, 'account' => $account]);
-            dump($userGroup);
             if (!$userGroup) continue;
             $group = $userGroup->getGroup();
-            dump($group);
             if (!$account->getStatus() && $group->getCode() !== UserGroup::EDIT) continue;
             $activeUserAccounts[] = $account;
         }
