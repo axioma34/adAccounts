@@ -53,6 +53,8 @@ class UserController extends AbstractController
      * @param UserPasswordEncoderInterface $encoder
      * @param AdAccountRepository $accountRepository
      * @param UserGroupRepository $groupRepository
+     * @param UserAccountRepository $userAccountRepository
+     * @param UsersGroupsRepository $groupsRepository
      * @return Response
      * @Route("/", name="user_new", methods={"POST"})
      *
@@ -73,10 +75,14 @@ class UserController extends AbstractController
      */
     public function new(Request $request, UserPasswordEncoderInterface $encoder,
                         AdAccountRepository $accountRepository,
-                        UserGroupRepository $groupRepository): Response
+                        UserGroupRepository $groupRepository,
+                        UserAccountRepository $userAccountRepository,
+                        UsersGroupsRepository $groupsRepository): Response
     {
         $user = new User();
-        $this->userFormHandler($user, $request, $accountRepository, $groupRepository, $encoder);
+        $this->userFormHandler($user, $request, $accountRepository, $groupRepository, $encoder,
+            $userAccountRepository, $groupsRepository);
+
         return $this->json($user);
     }
 
@@ -88,6 +94,8 @@ class UserController extends AbstractController
      * @param UserPasswordEncoderInterface $encoder
      * @param AdAccountRepository $accountRepository
      * @param UserGroupRepository $groupRepository
+     * @param UserAccountRepository $userAccountRepository
+     * @param UsersGroupsRepository $groupsRepository
      * @return Response
      * @Route("/{id}", name="user_edit", methods={"POST"})
      *
@@ -108,9 +116,13 @@ class UserController extends AbstractController
      */
     public function edit(User $user, Request $request, UserPasswordEncoderInterface $encoder,
                          AdAccountRepository $accountRepository,
-                         UserGroupRepository $groupRepository): Response
+                         UserGroupRepository $groupRepository,
+                         UserAccountRepository $userAccountRepository,
+                         UsersGroupsRepository $groupsRepository): Response
     {
-        $this->userFormHandler($user, $request, $accountRepository, $groupRepository, $encoder);
+        $this->userFormHandler($user, $request, $accountRepository, $groupRepository, $encoder,
+            $userAccountRepository, $groupsRepository);
+
         return $this->json($user);
     }
 
@@ -142,9 +154,15 @@ class UserController extends AbstractController
      * @param AdAccountRepository $accountRepository
      * @param UserGroupRepository $groupRepository
      * @param UserPasswordEncoderInterface $encoder
+     * @param UserAccountRepository $userAccountRepository
+     * @param UsersGroupsRepository $groupsRepository
      */
-    protected function userFormHandler(User $user, Request $request, AdAccountRepository $accountRepository,
-                                       UserGroupRepository $groupRepository, UserPasswordEncoderInterface $encoder): void
+    protected function userFormHandler(User $user, Request $request,
+                                       AdAccountRepository $accountRepository,
+                                       UserGroupRepository $groupRepository,
+                                       UserPasswordEncoderInterface $encoder,
+                                       UserAccountRepository $userAccountRepository,
+                                       UsersGroupsRepository $groupsRepository): void
     {
         $form = $this->createForm(UserType::class, $user);
         $form->submit($request->query->all());
@@ -167,10 +185,14 @@ class UserController extends AbstractController
                 $account = $accountRepository->findOneBy(['id' => $key]);
                 if (!$account || !$account->getStatus()) continue;
 
-                $user->addAccount($account);
+                $userAccount = $userAccountRepository->findOneBy(['user' => $user, 'account' => $account]);
+                if (!$userAccount) $user->addAccount($account);
 
                 $group = $groupRepository->findOneBy(['code' => $adAccount]);
                 if (!$group) continue;
+
+                $usersGroups = $groupsRepository->findOneBy(['user' =>$user, 'group' => $group]);
+                if ($usersGroups) continue;
 
                 $userGroup = new UsersGroups();
                 $userGroup->setAccount($account);
