@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\UserAccount;
 use App\Entity\UserGroup;
 use App\Entity\UsersGroups;
+use App\Form\LoginType;
 use App\Repository\UserAccountRepository;
 use App\Repository\UserRepository;
 use App\Repository\UsersGroupsRepository;
@@ -19,17 +20,34 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
+#[Route('/login')]
 class UserAuthController extends AbstractController
 {
     /**
-     * @Route("/login", name="app_login")
+     * @Route("/", name="app_login", methods={"POST"})
      * @param Request $request
      * @param UserRepository $userRepo
      * @param UserPasswordEncoderInterface $encoder
      * @param UserAccountRepository $userAccRepo
      * @param UsersGroupsRepository $ugRepo
      * @return Response
+     *
+     * @OA\Parameter(
+     *     name="payload",
+     *     in="path",
+     *     description="Данные для логина",
+     *     required=true,
+     *     @Model(type=App\Form\LoginType::class)
+     * )
+     *
+     * @OA\Response(
+     *     response="200",
+     *     description="Пользователь залогинен",
+     *     @OA\Parameter(name="token", description="токен пользователя", required=true)
+     * )
+     * @OA\Tag(name="Логин")
      */
     public function login(Request $request, UserRepository $userRepo,
                           UserPasswordEncoderInterface $encoder,
@@ -61,7 +79,6 @@ class UserAuthController extends AbstractController
             $activeUserAccounts[] = $account;
         }
 
-        dump((array_search('ROLE_ADMIN',$user->getRoles()) == false) );
         if ((array_search('ROLE_ADMIN',$user->getRoles()) === false) && !count($activeUserAccounts)) {
             throw new BadRequestHttpException('У пользователя нет доступов ни к одному кабинету');
         }
