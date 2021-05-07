@@ -7,12 +7,12 @@
 ### token - "admin"
 ### User creation payload example
 {
-  "email": "123",
+  "email": "user@gmail.com",
   "roles": [
     {"0":"ROLE_USER"}
   ],
-  "password": "string",
-  "name": "string",
+  "password": "pass",
+  "name": "user",
   "active": true,
   "accounts": [
     {"1": "EDIT"}
