@@ -26,7 +26,7 @@ use OpenApi\Annotations as OA;
 class UserAuthController extends AbstractController
 {
     /**
-     * @Route("/", name="app_login", methods={"POST"})
+     * @Route("", name="app_login", methods={"POST", "OPTIONS"})
      * @param Request $request
      * @param UserRepository $userRepo
      * @param UserPasswordEncoderInterface $encoder
@@ -52,7 +52,9 @@ class UserAuthController extends AbstractController
                           UserAccountRepository $userAccRepo,
                           UsersGroupsRepository $ugRepo): Response
     {
+        dump('asdasd');
         $data = $request->toArray();
+        dump($data);
         $login = array_key_exists('login', $data) ? $data['login'] : null;
         $password = array_key_exists('password', $data) ? $data['password'] : null;
 
