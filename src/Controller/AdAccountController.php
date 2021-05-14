@@ -21,6 +21,7 @@ class AdAccountController extends AbstractController
     /**
      * Список кабинетов.
      * @param AdAccountRepository $adAccountRepository
+     * @param UserAccountRepository $repository
      * @return Response
      * @Route("/list", name="ad_account_list", methods={"GET"})
      *
@@ -55,9 +56,8 @@ class AdAccountController extends AbstractController
      * @return Response
      * @Route("/", name="ad_account_new", methods={"POST"})
      *
-     * @OA\Parameter(
-     *     name="payload",
-     *     in="query",
+     *
+     * @OA\RequestBody(
      *     description="Данные кабинета",
      *     required=true,
      *     @Model(type=App\Form\AdAccountType::class)
@@ -74,7 +74,7 @@ class AdAccountController extends AbstractController
     {
         $adAccount = new AdAccount();
         $form = $this->createForm(AdAccountType::class, $adAccount);
-        $form->submit($request->query->all());
+        $form->submit($request->toArray());
 
         if (!$form->isValid()) throw new BadRequestHttpException('Invalid form data');
 
@@ -89,15 +89,14 @@ class AdAccountController extends AbstractController
      * @param Request $request
      * @param AdAccount $adAccount
      * @return Response
-     * @Route("/{id}/edit", name="ad_account_edit", methods={"POST"})
+     * @Route("/{id}", name="ad_account_edit", methods={"POST"})
      *
-     * @OA\Parameter(
-     *     name="payload",
-     *     in="query",
+     * @OA\RequestBody(
      *     description="Данные кабинета",
      *     required=true,
      *     @Model(type=App\Form\AdAccountType::class)
      * )
+     *
      * @OA\Parameter(name="id", in="path", description="ID кабинета", required=true)
      *
      * @OA\Response(
@@ -110,7 +109,7 @@ class AdAccountController extends AbstractController
     public function edit(Request $request, AdAccount $adAccount): Response
     {
         $form = $this->createForm(AdAccountType::class, $adAccount);
-        $form->submit($request->query->all());
+        $form->submit($request->toArray());
 
         if (!$form->isValid()) throw new BadRequestHttpException('Invalid form data');
 
@@ -124,7 +123,7 @@ class AdAccountController extends AbstractController
      * Удаление кабинета.
      * @param AdAccount $adAccount
      * @return Response
-     * @Route("/{id}", name="ad_account_delete", methods={"POST"})
+     * @Route("/{id}", name="ad_account_delete", methods={"DELETE"})
      *
      * @OA\Parameter(name="id", in="path", description="ID кабинета", required=true)
      *

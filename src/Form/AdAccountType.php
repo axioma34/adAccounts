@@ -21,6 +21,7 @@ class AdAccountType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => AdAccount::class,
+            'allow_extra_fields' => true
         ]);
     }
 }

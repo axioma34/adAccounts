@@ -35,7 +35,7 @@ class UserAuthController extends AbstractController
      * @return Response
      *
      * @OA\RequestBody(
-     *     description="Pet object that needs to be added to the store",
+     *     description="Логин и пароль для авторизации",
      *     required=true,
      *     @Model(type=App\Form\LoginType::class)
      * )
@@ -52,9 +52,7 @@ class UserAuthController extends AbstractController
                           UserAccountRepository $userAccRepo,
                           UsersGroupsRepository $ugRepo): Response
     {
-        dump('asdasd');
         $data = $request->toArray();
-        dump($data);
         $login = array_key_exists('login', $data) ? $data['login'] : null;
         $password = array_key_exists('password', $data) ? $data['password'] : null;
 
