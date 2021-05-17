@@ -36,6 +36,9 @@ class User implements UserInterface
     private $roles = [];
 
     /**
+     *
+     * @Ignore()
+     *
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
@@ -74,6 +77,9 @@ class User implements UserInterface
     protected $groups;
 
      /**
+      *
+      * @Ignore()
+      *
       * @ORM\Column(type="string", unique=true, nullable=true)
       */
      private $apiToken;
