@@ -80,7 +80,9 @@ class UserController extends AbstractController
                         UsersGroupsRepository $groupsRepository): Response
     {
         $user = new User();
-        $this->userFormHandler($user, $request, $accountRepository, $groupRepository, $encoder,
+        $data = $request->toArray();
+
+        $this->userFormHandler($user, $data, $accountRepository, $groupRepository, $encoder,
             $userAccountRepository, $groupsRepository);
 
         return $this->json($user);
@@ -120,7 +122,13 @@ class UserController extends AbstractController
                          UserAccountRepository $userAccountRepository,
                          UsersGroupsRepository $groupsRepository): Response
     {
-        $this->userFormHandler($user, $request, $accountRepository, $groupRepository, $encoder,
+
+        $data = $request->toArray();
+        if (array_key_exists('password', $data) && !$data['password']) {
+            $data['password'] = $user->getPassword();
+        }
+
+        $this->userFormHandler($user, $data, $accountRepository, $groupRepository, $encoder,
             $userAccountRepository, $groupsRepository);
 
         return $this->json($user);
@@ -150,22 +158,26 @@ class UserController extends AbstractController
 
     /**
      * @param User $user
-     * @param Request $request
+     * @param array $data
      * @param AdAccountRepository $accountRepository
      * @param UserGroupRepository $groupRepository
      * @param UserPasswordEncoderInterface $encoder
      * @param UserAccountRepository $userAccountRepository
      * @param UsersGroupsRepository $groupsRepository
      */
-    protected function userFormHandler(User $user, Request $request,
+    protected function userFormHandler(User $user, array $data,
                                        AdAccountRepository $accountRepository,
                                        UserGroupRepository $groupRepository,
                                        UserPasswordEncoderInterface $encoder,
                                        UserAccountRepository $userAccountRepository,
                                        UsersGroupsRepository $groupsRepository): void
     {
+
+        $isAdmin = array_key_exists('is_admin', $data) ? $data['is_admin'] : false;
+        if ($isAdmin) $user->setRoles(["ROLE_ADMIN"]);
+
         $form = $this->createForm(UserType::class, $user);
-        $form->submit($request->query->all());
+        $form->submit($data);
 
         if (!$form->isValid()) throw new BadRequestHttpException('Invalid form data');
 
@@ -202,7 +214,7 @@ class UserController extends AbstractController
 
             }
         }
-
+        dump($user);
         $entityManager->persist($user);
         $entityManager->flush();
     }

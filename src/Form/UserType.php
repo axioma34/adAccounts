@@ -18,17 +18,15 @@ class UserType extends AbstractType
     {
         $builder
             ->add('email', TextType::class)
-            ->add('roles', CollectionType::class, [
-                'entry_type' => TextType::class
-            ])
-            ->add('password')
             ->add('name')
             ->add('active')
+            ->add('password')
 
             ->add('accounts', CollectionType::class, [
                 'allow_add' => true,
                 'entry_type' => TextType::class,
-                'allow_extra_fields' => true
+                'allow_extra_fields' => true,
+                'required' => false
             ]);
     }
 

@@ -84,6 +84,16 @@ class User implements UserInterface
       */
      private $apiToken;
 
+    /**
+     * @Ignore()
+     */
+     private $salt;
+
+    /**
+     * @Ignore()
+     */
+    private $username;
+
     #[Pure] public function __construct() {
         $this->accounts = new ArrayCollection();
         $this->groups = new ArrayCollection();
@@ -111,9 +121,9 @@ class User implements UserInterface
      *
      * @see UserInterface
      */
-    public function getUsername(): string
+    public function getUsername()
     {
-        return (string) $this->email;
+        return null;
     }
 
     /**
